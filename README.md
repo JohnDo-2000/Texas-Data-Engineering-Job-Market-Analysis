@@ -118,11 +118,9 @@ ORDER BY demand DESC
 
 ### Lambda Test — Successful Execution
 
-<img width="1280" height="670" alt="Lambda" src="https://github.com/user-attachments/assets/d34bc22d-349b-4848-97ce-035710dad2fa" />
+![Lambda](screenshots/lambda.png)
 
-
-<img width="1280" height="668" alt="Lambda test" src="https://github.com/user-attachments/assets/9f07dc32-9544-45d1-b830-df71bda2bc28" />
-
+![Lambda Success](screenshots/lambda_test.png)
 
 - Status: 200
 - Jobs fetched: 3,044
@@ -130,32 +128,28 @@ ORDER BY demand DESC
 
 ### S3 Data Lake — Partitioned Storage
 
-<img width="1280" height="669" alt="S3" src="https://github.com/user-attachments/assets/02da4bc7-36e3-43ed-812c-728c62a31303" />
-
+![S3 Bucket](screenshots/s3.png)
 
 - File: `results.csv` (2.9 MB)
 - Partition: `run_date=2026-06-06`
 
 ### Glue Crawler — 20 Successful Runs
 
-<img width="1280" height="672" alt="Glue" src="https://github.com/user-attachments/assets/bf0508a4-e381-4cd6-8e4e-60e2b5e0b25f" />
-
+![Glue Crawler](screenshots/glue.png)
 
 - Running daily since May 30, 2026
 - All runs completed successfully
 
 ### Athena Query — Live Data Verification
 
-<img width="1280" height="672" alt="Athena" src="https://github.com/user-attachments/assets/19439fe3-aad4-4036-bfc6-fc5916d71d98" />
-
+![Athena Query](screenshots/athena.png)
 
 - `SELECT COUNT(*) FROM jobs_csv` → 3,032 rows
 - Query time: 491ms, Data scanned: 2.87 MB
 
 ### Tableau Dashboard
 
-<img width="934" height="754" alt="Tableau" src="https://github.com/user-attachments/assets/48213e06-954e-4533-ad57-6aec957bb8d3" />
-
+![Dashboard](screenshots/tableau.png)
 
 ---
 
