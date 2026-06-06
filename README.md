@@ -200,21 +200,3 @@ cron(0 8 * * ? *)
     ├── athena_count_query.png
     └── tableau_dashboard.png
 ```
-
----
-
-## Resume Bullet Points
-
-```
-Automated Texas Data Engineering Job Market ELT Pipeline
-AWS Lambda · EventBridge · S3 · Glue · Athena · Tableau · Python
-
-• Built end-to-end automated ELT pipeline ingesting 3,000+ daily job 
-  postings from Adzuna API using AWS Lambda + EventBridge cron schedule
-• Architected S3 data lake with date partitioning; cataloged via AWS 
-  Glue crawler and queried with Athena SQL
-• Identified AI as #1 in-demand skill (38% of postings) and $124K avg 
-  salary through custom SQL skill-matching queries
-• Built 4-viz Tableau dashboard: KPI cards, scatter plot with quadrant 
-  analysis, heat map with DATEPART() calculated fields, bar chart
-```
