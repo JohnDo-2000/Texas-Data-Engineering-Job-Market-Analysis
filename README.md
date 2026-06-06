@@ -139,6 +139,7 @@ ORDER BY demand DESC
 
 ### Tableau Dashboard
 ![Dashboard](screenshots/tableau_dashboard.png)
+<img width="1280" height="764" alt="Tableau" src="https://github.com/user-attachments/assets/459b73ae-1b58-483a-93f9-f65433cb3efa" />
 
 ---
 
