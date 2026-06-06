@@ -120,7 +120,7 @@ ORDER BY demand DESC
 
 ![Lambda](screenshots/Lambda.png)
 
-![Lambda Success](screenshots/Lambda test.png)
+![Lambda Success](screenshots/Lambda%20test.png)
 
 - Status: 200
 - Jobs fetched: 3,044
