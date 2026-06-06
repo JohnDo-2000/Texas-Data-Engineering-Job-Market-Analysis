@@ -118,9 +118,9 @@ ORDER BY demand DESC
 
 ### Lambda Test — Successful Execution
 
-![Lambda](screenshots/lambda.png)
+![Lambda](screenshots/Lambda.png)
 
-![Lambda Success](screenshots/lambda_test.png)
+![Lambda Success](screenshots/Lambda_test.png)
 
 - Status: 200
 - Jobs fetched: 3,044
@@ -128,28 +128,28 @@ ORDER BY demand DESC
 
 ### S3 Data Lake — Partitioned Storage
 
-![S3 Bucket](screenshots/s3.png)
+![S3 Bucket](screenshots/S3.png)
 
 - File: `results.csv` (2.9 MB)
 - Partition: `run_date=2026-06-06`
 
 ### Glue Crawler — 20 Successful Runs
 
-![Glue Crawler](screenshots/glue.png)
+![Glue Crawler](screenshots/Glue.png)
 
 - Running daily since May 30, 2026
 - All runs completed successfully
 
 ### Athena Query — Live Data Verification
 
-![Athena Query](screenshots/athena.png)
+![Athena Query](screenshots/Athena.png)
 
 - `SELECT COUNT(*) FROM jobs_csv` → 3,032 rows
 - Query time: 491ms, Data scanned: 2.87 MB
 
 ### Tableau Dashboard
 
-![Dashboard](screenshots/tableau.png)
+![Dashboard](screenshots/Tableau.png)
 
 ---
 
