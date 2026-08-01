@@ -44,7 +44,7 @@ skill_demand_query (Athena)
 Each step now only runs if the previous one succeeds, with automatic retries and a full
 run history visible in the Airflow UI — instead of a single unmonitored cron trigger.
 
-![Airflow DAG - all tasks succeeded](screenshots/airflow_dag_success.png)
+![Airflow DAG - all tasks succeeded](screenshots/airflow_dag.png)
 
 ---
 
