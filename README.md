@@ -1,14 +1,14 @@
 # Texas Data Engineering Job Market Analysis
-### Automated ELT Pipeline + Tableau Dashboard
+### Automated ELT Pipeline + Airflow Orchestration + Tableau Dashboard
 
-An end-to-end automated data pipeline that extracts daily job postings from the Adzuna API, stores them in AWS S3, catalogs them with AWS Glue, queries them with AWS Athena, and visualizes insights in Tableau.
+An end-to-end automated data pipeline that extracts daily job postings from the Adzuna API, stores them in AWS S3, catalogs them with AWS Glue, queries them with AWS Athena, and visualizes insights in Tableau. Orchestrated with **Apache Airflow**.
 
 ---
 
 ## Architecture
 
 ```
-EventBridge (daily 8am UTC)
+Apache Airflow (Astro CLI, Docker) — @daily schedule
         ↓
 AWS Lambda (Python 3.11)
         ↓
@@ -25,18 +25,52 @@ Tableau Dashboard (live visualizations)
 
 ---
 
+## Orchestration Evolution
+
+Originally scheduled via **AWS EventBridge** (`cron(0 8 * * ? *)`) triggering the Lambda
+directly. Migrated to **Apache Airflow** (via Astro CLI, running locally on Docker) to add
+proper dependency management, retries, and observability across the pipeline:
+
+```
+extract_adzuna_jobs (Lambda)
+        ↓
+run_glue_crawler (Glue)
+        ↓
+wait_for_crawler (Glue Crawler Sensor)
+        ↓
+skill_demand_query (Athena)
+```
+
+Each step now only runs if the previous one succeeds, with automatic retries and a full
+run history visible in the Airflow UI — instead of a single unmonitored cron trigger.
+
+![Airflow DAG - all tasks succeeded](screenshots/airflow_dag_success.png)
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
 | Extraction | Python, Adzuna REST API |
-| Orchestration | AWS EventBridge (daily cron) |
+| Orchestration | Apache Airflow (Astro CLI, Docker) — *previously AWS EventBridge* |
 | Compute | AWS Lambda (Python 3.11) |
 | Storage | Amazon S3 (data lake) |
 | Cataloging | AWS Glue Crawler |
 | Querying | AWS Athena (SQL) |
 | Visualization | Tableau Desktop |
-| Monitoring | AWS CloudWatch |
+| Monitoring | AWS CloudWatch, Airflow UI (task logs, retries, run history) |
+
+### Airflow Operators Used
+
+| Task | Operator |
+|---|---|
+| Invoke Lambda extraction | `LambdaInvokeFunctionOperator` |
+| Trigger Glue crawler | `GlueCrawlerOperator` |
+| Wait for crawler completion | `GlueCrawlerSensor` |
+| Run Athena skill-demand query | `AthenaOperator` |
+
+DAG file: [`dags/tx_job_market_dag.py`](dags/tx_job_market_dag.py)
 
 ---
 
@@ -89,10 +123,11 @@ s3://job-market-tracker/
 ```
 
 ### Automation
-- **EventBridge rule**: `cron(0 8 * * ? *)` — runs daily at 8am UTC
+- **Orchestration**: Apache Airflow DAG (`tx_job_market_pipeline`), `@daily` schedule, running locally via Astro CLI on Docker — *previously an EventBridge rule (`cron(0 8 * * ? *)`), now retired*
+- **Retries**: 2 automatic retries per task, 5-minute delay, configured at the DAG level
 - **Lambda timeout**: 5 minutes
 - **Lambda memory**: 256 MB (peak usage: 232 MB)
-- **Execution time**: ~130 seconds per run
+- **Execution time**: ~130 seconds per run (AWS connection read/connect timeout set to 300s in Airflow to accommodate this)
 
 ### SQL Skill Analysis
 Custom SQL queries in Athena using `UNION ALL` pattern to count skill mentions across job titles and descriptions:
@@ -115,6 +150,13 @@ ORDER BY demand DESC
 ---
 
 ## Screenshots
+
+### Airflow DAG — Successful End-to-End Run
+
+![Airflow DAG](screenshots/airflow_dag_success.png)
+
+- All 4 tasks (`extract_adzuna_jobs`, `run_glue_crawler`, `wait_for_crawler`, `skill_demand_query`) succeeded
+- 0 failed tasks, 0 failed runs
 
 ### Lambda Test — Successful Execution
 
@@ -159,6 +201,7 @@ ORDER BY demand DESC
 - AWS account with Lambda, S3, Glue, Athena access
 - Adzuna API credentials (free at developer.adzuna.com)
 - Tableau Desktop
+- Docker Desktop + [Astro CLI](https://www.astronomer.io/docs/astro/cli/install-cli) (for running the Airflow orchestration layer locally)
 
 ### Environment Variables (Lambda)
 ```
@@ -172,10 +215,16 @@ S3_BUCKET=your_bucket_name
 arn:aws:lambda:us-east-2:336392948345:layer:AWSSDKPandas-Python311:31
 ```
 
-### EventBridge Schedule
+### Running the Airflow DAG Locally
+```bash
+astro dev init      # first time only
+astro dev start
 ```
-cron(0 8 * * ? *)
+Then create an `aws_default` connection in the Airflow UI (`localhost:8080` → Admin → Connections) with your AWS credentials, and set the Extra field to:
+```json
+{"region_name": "us-east-2", "config_kwargs": {"read_timeout": 300, "connect_timeout": 300}}
 ```
+Place `tx_job_market_dag.py` in the `dags/` folder — Airflow will auto-detect it.
 
 ---
 
@@ -185,9 +234,12 @@ cron(0 8 * * ? *)
 ├── README.md
 ├── lambda_function.py          ← Main ETL script (Lambda entry point)
 ├── requirements.txt            ← Python dependencies
+├── dags/
+│   └── tx_job_market_dag.py    ← Airflow DAG: Lambda → Glue → Athena
 ├── sql/
 │   └── skill_demand_queries.sql ← Athena SQL for Tableau
 └── screenshots/
+    ├── airflow_dag_success.png
     ├── lambda_test_success.png
     ├── s3_partitioned_data.png
     ├── glue_crawler_runs.png
